@@ -325,14 +325,24 @@
           "const": "deny-open-app-settings"
         },
         {
-          "description": "Enables the register_listener command without any pre-configured scope.",
+          "description": "Enables the registerListener command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-register-listener"
+          "const": "allow-registerListener"
         },
         {
-          "description": "Denies the register_listener command without any pre-configured scope.",
+          "description": "Denies the registerListener command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-register-listener"
+          "const": "deny-registerListener"
+        },
+        {
+          "description": "Enables the remove_listener command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-remove-listener"
+        },
+        {
+          "description": "Denies the remove_listener command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-remove-listener"
         },
         {
           "description": "Enables the request_permissions command without any pre-configured scope.",

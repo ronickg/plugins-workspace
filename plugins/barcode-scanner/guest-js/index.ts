@@ -6,11 +6,10 @@ import {
   invoke,
   requestPermissions as requestPermissions_,
   checkPermissions as checkPermissions_,
+  PermissionState,
   addPluginListener,
   PluginListener
 } from '@tauri-apps/api/core'
-
-export type { PermissionState } from '@tauri-apps/api/core'
 
 export enum Format {
   QRCode = 'QR_CODE',
@@ -89,12 +88,14 @@ export async function openAppSettings(): Promise<void> {
 export async function startScan(
   options: ScanOptions,
   onDetect: (scanned: Scanned) => void
-  // onError?: (error: { error: string }) => void
 ): Promise<PluginListener> {
+  // First start the scan
   await invoke('plugin:barcode-scanner|start_scan', { ...options })
   console.log('Start scanning')
+
+  // Then register the event listener
   return await addPluginListener(
-    'barcode-scanner',
+    'barcode-scanner', // Need to use the full plugin name with prefix
     'barcode-detected',
     onDetect
   )

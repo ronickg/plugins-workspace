@@ -1,12 +1,14 @@
 <script>
+  import { addPluginListener } from '@tauri-apps/api/core'
+  import { onDestroy } from 'svelte'
   import {
-    scan,
-    checkPermissions,
-    requestPermissions,
-    Format,
-    cancel,
-    startScan,
-    stopScan
+      scan,
+      checkPermissions,
+      requestPermissions,
+      Format,
+      cancel,
+      startScan,
+      stopScan
   } from '@tauri-apps/plugin-barcode-scanner'
 
   export let onMessage
@@ -15,33 +17,7 @@
   let windowed = true
   let formats = [Format.QRCode]
   const supportedFormats = [Format.QRCode, Format.EAN13]
-
-  // async function startScanOld() {
-  //   let permission = await checkPermissions()
-  //   if (permission === 'prompt') {
-  //     permission = await requestPermissions()
-  //   }
-  //   if (permission === 'granted') {
-  //     scanning = true
-  //     scan({ windowed, formats })
-  //       .then((res) => {
-  //         scanning = false
-  //         onMessage(res)
-  //       })
-  //       .catch((error) => {
-  //         scanning = false
-  //         onMessage(error)
-  //       })
-  //   } else {
-  //     onMessage('Permission denied')
-  //   }
-  // }
-
-  // async function cancelScan() {
-  //   await cancel()
-  //   scanning = false
-  //   onMessage('cancelled')
-  // }
+  let listener = null;
 
   async function handleStartScan() {
     let permission = await checkPermissions()
@@ -50,29 +26,41 @@
     }
     if (permission === 'granted') {
       scanning = true
-      // Set up the listener and start scanning
-       await startScan(
-        { windowed, formats },
-        (result) => {
-          console.log(result)
-          onMessage(result)
-          // Note: Camera stays active now, you'll keep getting results
-        },
-        (error) => {
-          console.log(error)
-          onMessage(error)
-        }
-      )
+      try {
+        listener = await startScan(
+          { windowed, formats },
+          (result) => {
+            console.log('Scan result:', result)
+            onMessage(result)
+          }
+        )
+      } catch (error) {
+        console.error('Scan error:', error)
+        onMessage(error)
+        scanning = false
+      }
     } else {
       onMessage('Permission denied')
     }
-  }
+}
 
   async function handleCancelScan() {
-    await stopScan() // Stop the camera
-    scanning = false
-    onMessage('cancelled')
+      if (listener) {
+        await listener.unregister()
+        listener = null
+      }
+      await stopScan() // Stop the camera
+      scanning = false
+      onMessage('cancelled')
   }
+
+  onDestroy(() => {
+      if (listener) {
+        listener.unregister().catch(console.error)
+      }
+  })
+
+
 </script>
 
 <div class="full-height">
