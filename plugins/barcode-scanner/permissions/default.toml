@@ -17,4 +17,7 @@ permissions = [
   "allow-request-permissions",
   "allow-scan",
   "allow-vibrate",
+  "allow-start-scan",
+  "allow-stop-scan",
+  "allow-register-listener",
 ]

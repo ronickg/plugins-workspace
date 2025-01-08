@@ -4,7 +4,9 @@
     checkPermissions,
     requestPermissions,
     Format,
-    cancel
+    cancel,
+    startScan,
+    stopScan
   } from '@tauri-apps/plugin-barcode-scanner'
 
   export let onMessage
@@ -14,29 +16,60 @@
   let formats = [Format.QRCode]
   const supportedFormats = [Format.QRCode, Format.EAN13]
 
-  async function startScan() {
+  // async function startScanOld() {
+  //   let permission = await checkPermissions()
+  //   if (permission === 'prompt') {
+  //     permission = await requestPermissions()
+  //   }
+  //   if (permission === 'granted') {
+  //     scanning = true
+  //     scan({ windowed, formats })
+  //       .then((res) => {
+  //         scanning = false
+  //         onMessage(res)
+  //       })
+  //       .catch((error) => {
+  //         scanning = false
+  //         onMessage(error)
+  //       })
+  //   } else {
+  //     onMessage('Permission denied')
+  //   }
+  // }
+
+  // async function cancelScan() {
+  //   await cancel()
+  //   scanning = false
+  //   onMessage('cancelled')
+  // }
+
+  async function handleStartScan() {
     let permission = await checkPermissions()
     if (permission === 'prompt') {
       permission = await requestPermissions()
     }
     if (permission === 'granted') {
       scanning = true
-      scan({ windowed, formats })
-        .then((res) => {
-          scanning = false
-          onMessage(res)
-        })
-        .catch((error) => {
-          scanning = false
+      // Set up the listener and start scanning
+       await startScan(
+        { windowed, formats },
+        (result) => {
+          console.log(result)
+          onMessage(result)
+          // Note: Camera stays active now, you'll keep getting results
+        },
+        (error) => {
+          console.log(error)
           onMessage(error)
-        })
+        }
+      )
     } else {
       onMessage('Permission denied')
     }
   }
 
-  async function cancelScan() {
-    await cancel()
+  async function handleCancelScan() {
+    await stopScan() // Stop the camera
     scanning = false
     onMessage('cancelled')
   }
@@ -55,7 +88,7 @@
         {/each}
       </select>
     </div>
-    <button class="btn" type="button" on:click={startScan}>Scan</button>
+    <button class="btn" type="button" on:click={handleStartScan}>Scan</button>
   </div>
   <div class="scanning full-height" class:invisible={!scanning}>
     <div class="scanner-background">
@@ -65,7 +98,7 @@
       <div class="barcode-scanner--area--container">
         <div class="relative">
           <p>Aim your camera at a QR code</p>
-          <button class="btn" type="button" on:click={cancelScan}>Cancel</button
+          <button class="btn" type="button" on:click={handleCancelScan}>Cancel</button
           >
         </div>
         <div class="square surround-cover">

@@ -15,6 +15,9 @@ It allows all barcode related features.
 - `allow-request-permissions`
 - `allow-scan`
 - `allow-vibrate`
+- `allow-start-scan`
+- `allow-stop-scan`
+- `allow-register-listener`
 
 ## Permission Table
 
@@ -106,6 +109,32 @@ Denies the open_app_settings command without any pre-configured scope.
 <tr>
 <td>
 
+`barcode-scanner:allow-register-listener`
+
+</td>
+<td>
+
+Enables the register_listener command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`barcode-scanner:deny-register-listener`
+
+</td>
+<td>
+
+Denies the register_listener command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 `barcode-scanner:allow-request-permissions`
 
 </td>
@@ -151,6 +180,58 @@ Enables the scan command without any pre-configured scope.
 <td>
 
 Denies the scan command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`barcode-scanner:allow-start-scan`
+
+</td>
+<td>
+
+Enables the start_scan command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`barcode-scanner:deny-start-scan`
+
+</td>
+<td>
+
+Denies the start_scan command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`barcode-scanner:allow-stop-scan`
+
+</td>
+<td>
+
+Enables the stop_scan command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`barcode-scanner:deny-stop-scan`
+
+</td>
+<td>
+
+Denies the stop_scan command without any pre-configured scope.
 
 </td>
 </tr>

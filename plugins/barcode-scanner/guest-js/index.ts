@@ -5,7 +5,9 @@
 import {
   invoke,
   requestPermissions as requestPermissions_,
-  checkPermissions as checkPermissions_
+  checkPermissions as checkPermissions_,
+  addPluginListener,
+  PluginListener
 } from '@tauri-apps/api/core'
 
 export type { PermissionState } from '@tauri-apps/api/core'
@@ -76,4 +78,31 @@ export async function requestPermissions(): Promise<PermissionState> {
  */
 export async function openAppSettings(): Promise<void> {
   await invoke('plugin:barcode-scanner|open_app_settings')
+}
+
+/**
+ * Start scanning and listen for barcode events.
+ * @param options Scan options
+ * @param onDetect Callback for when a barcode is detected
+ * @param onError Optional callback for errors
+ */
+export async function startScan(
+  options: ScanOptions,
+  onDetect: (scanned: Scanned) => void
+  // onError?: (error: { error: string }) => void
+): Promise<PluginListener> {
+  await invoke('plugin:barcode-scanner|start_scan', { ...options })
+  console.log('Start scanning')
+  return await addPluginListener(
+    'barcode-scanner',
+    'barcode-detected',
+    onDetect
+  )
+}
+
+/**
+ * Stop the current scanning process.
+ */
+export async function stopScan(): Promise<void> {
+  await invoke('plugin:barcode-scanner|stop_scan')
 }

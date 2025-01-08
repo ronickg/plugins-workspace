@@ -6,9 +6,12 @@ const COMMANDS: &[&str] = &[
     "scan",
     "cancel",
     "request_permissions",
+    "register_listener",
     "check_permissions",
     "open_app_settings",
     "vibrate",
+    "start_scan",
+    "stop_scan",
 ];
 
 fn main() {

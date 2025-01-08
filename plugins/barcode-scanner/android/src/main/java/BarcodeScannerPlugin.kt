@@ -304,12 +304,17 @@ class BarcodeScannerPlugin(private val activity: Activity) : Plugin(activity),
                         jsObject.put("format", format)
                         jsObject.put("bounds", s)
 
-                        savedInvoke?.resolve(jsObject)
-                        destroy()
+                        // Use trigger instead of Events.emit
+                        trigger("barcode-detected", jsObject)
+//                        Logger.info("trigger")
+
                     }
                 }
                 ?.addOnFailureListener { e ->
                     Logger.error(e.message ?: e.toString())
+                    // val error = JSObject()
+                    // error.put("error", e.message)
+                    // trigger("barcode-error", error)
                 }
                 ?.addOnCompleteListener {
                     image.close()
@@ -330,6 +335,33 @@ class BarcodeScannerPlugin(private val activity: Activity) : Plugin(activity),
         }
         invoke.resolve()
     }
+
+    @Command
+    fun startScan(invoke: Invoke) {
+        val args = invoke.parseArgs(ScanOptions::class.java)
+
+        if (hasCamera()) {
+            if (getPermissionState("camera") != PermissionState.GRANTED) {
+                val error = JSObject()
+                error.put("error", "Camera permission not granted")
+                trigger("barcode-error", error)
+                throw Exception("No permission to use camera. Did you request it yet?")
+            } else {
+                webViewBackground = null
+                prepare(args.cameraDirection ?: "back", args.windowed)
+                configureCamera(getFormats(args))
+                invoke.resolve() // Just acknowledge the start command
+            }
+        }
+    }
+
+    @Command
+    fun stopScan(invoke: Invoke) {
+        destroy()
+        trigger("barcode-stopped", JSObject())
+        invoke.resolve()
+    }
+
 
     @Command
     fun cancel(invoke: Invoke) {
